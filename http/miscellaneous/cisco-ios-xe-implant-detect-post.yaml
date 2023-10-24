@@ -1,0 +1,32 @@
+id: CVE-2023-20198
+
+info:
+  name: Cisco IOS XE Implants - Detection Of Compromise
+  author: redwaysecurity
+  severity: critical
+  description: |
+    This template is designed to detect a newly deployed implant used by threat actors in a campaign targeting Cisco IOS XE devices. It operates by sending a request to the device's Web UI to check for the presence of the implant. If the response to the request includes a hexadecimal string resembling the one described in the third function above, it indicates the presence of a known version of the implant.
+  reference:
+    - https://blog.talosintelligence.com/active-exploitation-of-cisco-ios-xe-software/
+  metadata:
+    max-request: 1
+    shodan-query: http.html_hash:1076109428
+  tags: cve,cve2023,cisco,ios,kev
+
+http:
+  - method: POST
+    headers:
+      Authorization: 0ff4fbf0ecffa77ce8d3852a29263e263838e9bb
+    path:
+      - "{{BaseURL}}/webui/logoutconfirm.html?logon_hash=1"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - '^([a-f0-9]{18})\s*$'
+
+      - type: status
+        status:
+          - 200

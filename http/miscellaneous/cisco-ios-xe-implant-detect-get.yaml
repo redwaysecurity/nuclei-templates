@@ -1,0 +1,30 @@
+id: CVE-2023-20198
+
+info:
+  name: Cisco IOS XE Implants - Detection Of Compromise
+  author: redwaysecurity
+  severity: critical
+  description: |
+    This template is designed to detect a newly deployed implant used by threat actors in a campaign targeting Cisco IOS XE devices. If the request returns a 404 HTTP response along with an HTML page containing a "404 Not Found" message, it indicates the presence of a known variation of the implant. A system without the implant should either return only the standard 404 HTTP response or a JavaScript redirect 200 HTTP response. This behavior can help in identifying the existence of the implant or its variations on the device. 
+  reference:
+    - https://blog.talosintelligence.com/active-exploitation-of-cisco-ios-xe-software/
+  metadata:
+    max-request: 1
+    shodan-query: http.html_hash:1076109428
+  tags: cve,cve2023,cisco,ios,kev
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/{{to_lower(rand_text_alpha(4))}}%25"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<head><title>404 Not Found</title></head>'
+
+      - type: status
+        status:
+          - 404
